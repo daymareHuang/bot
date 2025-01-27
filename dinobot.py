@@ -63,7 +63,7 @@ def countDownFree():
 
 # 主函數
 if __name__ == "__main__":
-  schedule.every().day.at("02:45").do(countDownFree)
+  schedule.every().day.at("02:55").do(countDownFree)
   # 現在這裡是在UTC+0 所以要檢查時間 如果要排程了話
   # print("當前系統時間:", time.strftime("%Y-%m-%d %H:%M:%S"))
   # print("開始定時任務...")
