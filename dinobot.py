@@ -1,7 +1,10 @@
 import requests, math, datetime, schedule, time
 from bs4 import BeautifulSoup
+import os
 
 # Telegram Bot 配置
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+CHAT_ID = os.environ.get("CHAT_ID")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
 
@@ -60,7 +63,7 @@ def countDownFree():
 
 # 主函數
 if __name__ == "__main__":
-  schedule.every().day.at("02:40").do(countDownFree)
+  schedule.every().day.at("02:45").do(countDownFree)
   # 現在這裡是在UTC+0 所以要檢查時間 如果要排程了話
   # print("當前系統時間:", time.strftime("%Y-%m-%d %H:%M:%S"))
   # print("開始定時任務...")
