@@ -81,7 +81,7 @@ def countDownFree():
 if __name__ == "__main__":
   schedule.every().day.at("04:00").do(countDownFree)
   port = int(os.environ.get("PORT", 5000))
-  app.run(host="127.0.0.1", port=port)
+  app.run(host="0.0.0.0", port=port)
   # 現在這裡是在UTC+0 所以要檢查時間 如果要排程了話
   # print("當前系統時間:", time.strftime("%Y-%m-%d %H:%M:%S"))
   # print("開始定時任務...")
