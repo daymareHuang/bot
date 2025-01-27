@@ -1,12 +1,28 @@
 import requests, math, datetime, schedule, time
 from bs4 import BeautifulSoup
 import os
+from flask import Flask
 
 # Telegram Bot 配置
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+WEBHOOK_URL = f"https://dinobot-dkup.onrender.com/{BOT_TOKEN}"
+app = Flask(__name__)
 
+@app.route("/", methods=["GET"])
+def index():
+   return "Telegram Bot is runnung!", 200
+
+response = requests.get(
+    f"https://api.telegram.org/bot{BOT_TOKEN}/setWebhook",
+    params={"url": WEBHOOK_URL},
+)
+
+if response.status_code == 200:
+    print("Webhook 設置成功")
+else:
+    print(f"設置 Webhook 失敗: {response.text}")
 
 # 限時免費遊戲
 def freeGameInfo():
@@ -63,7 +79,9 @@ def countDownFree():
 
 # 主函數
 if __name__ == "__main__":
-  schedule.every().day.at("02:55").do(countDownFree)
+  schedule.every().day.at("03:05").do(countDownFree)
+  port = int(os.environ.get("PORT", 5000))
+  app.run(host="0.0.0.0", port=port)
   # 現在這裡是在UTC+0 所以要檢查時間 如果要排程了話
   # print("當前系統時間:", time.strftime("%Y-%m-%d %H:%M:%S"))
   # print("開始定時任務...")
