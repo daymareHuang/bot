@@ -75,6 +75,11 @@ def countDownFree():
         send_message_to_telegram(f"{scraped_data}")
     else:
         send_message_to_telegram("爬蟲沒有獲得任何數據。")
+        
+def run_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
 
