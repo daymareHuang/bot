@@ -1,6 +1,7 @@
 import requests, math, datetime, schedule, time
 from bs4 import BeautifulSoup
 import os
+import threading
 from flask import Flask
 
 # Telegram Bot 配置
@@ -79,13 +80,13 @@ def countDownFree():
 
 # 主函數
 if __name__ == "__main__":
-  schedule.every().day.at("04:05").do(countDownFree)
-  port = int(os.environ.get("PORT", 5000))
-  app.run(host="0.0.0.0", port=port)
-  # 現在這裡是在UTC+0 所以要檢查時間 如果要排程了話
-  # print("當前系統時間:", time.strftime("%Y-%m-%d %H:%M:%S"))
-  # print("開始定時任務...")
-  # 爬取資料
-  while True:
-    schedule.run_pending()
-    time.sleep(1)
+    schedule.every().day.at("04:20").do(countDownFree)
+
+    # 啟動排程任務執行
+    schedule_thread = threading.Thread(target=run_schedule)
+    schedule_thread.daemon = True  # 設置為守護線程，當主線程結束時，這個線程會自動終止
+    schedule_thread.start()
+
+    # 啟動 Flask 伺服器
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
