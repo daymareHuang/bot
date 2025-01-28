@@ -12,8 +12,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-line_bot_api= LineBotApi('8aNTpiF1FmK9RsgcKH4IxZbXk672Ygiwn1i1kC8653SSblQkhQzvBFRNamPU//hCbYKZMr6s0vUnrJBI3ZEe6KYjzFz3jcrYNUHjBn65Tg1gRGEGji2XRm16zVm8guR/xXXFP2WpQV03Er8+ruXsOgdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('U8352ecae680235a193b30eccfb649e5a')
+line_bot_api= LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
+handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 print(line_bot_api)
 print(handler)
 
