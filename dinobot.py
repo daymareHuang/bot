@@ -1,33 +1,45 @@
-import requests, math, datetime, schedule, time
+import requests, math, datetime, schedule, time, abort, request
 from bs4 import BeautifulSoup
 import os
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import TextSendMessage, MessageEvent, TextMessage
+from dotenv import load_dotenv
 import threading
 from flask import Flask
 
-# Telegram Bot 配置
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-CHAT_ID = os.environ.get("CHAT_ID")
-TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-WEBHOOK_URL = f"https://dinobot-dkup.onrender.com/{BOT_TOKEN}"
+load_dotenv()
+
 app = Flask(__name__)
 
-@app.route("/", methods=["GET"])
-def index():
-   return "Telegram Bot is runnung!", 200
+line_bot_api= LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
+handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
-response = requests.get(
-    f"https://api.telegram.org/bot{BOT_TOKEN}/setWebhook",
-    params={"url": WEBHOOK_URL},
-)
+@app.route("/callback", methods=['POST'])
+def callback():
+    # Get X-Line-Signature from request header
+    signature = request.headers['X-Line-Signature']
 
-if response.status_code == 200:
-    print("Webhook 設置成功")
-else:
-    print(f"設置 Webhook 失敗: {response.text}")
+    # Get request body as text
+    body = request.get_data(as_text=True)
 
+    try:
+        # Handle webhook body
+        handler.handle(body, signature)
+    except InvalidSignatureError:
+        abort(400)
+
+    # Return a 200 OK status code
+    return 'OK', 200
+
+
+
+# @app.route("/freeGameInfo", methods=["POST"])
 # 限時免費遊戲
 def freeGameInfo():
-    url = 'https://www.ptt.cc/bbs/Steam/search?q=%E9%99%90%E5%85%8D'  # 替換為你的目標網站
+     # 取得 X-Line-Signature Header
+   
+    url = 'https://www.ptt.cc/bbs/Steam/search?q=%E9%99%90%E5%85%8D' 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
@@ -52,46 +64,31 @@ def freeGameInfo():
         return f"無法訪問網站，狀態碼：{response.status_code}"
 
 
-
-
-
-# 發送訊息到 Telegram
-def send_message_to_telegram(message):
-    data = {
-        'chat_id': CHAT_ID,
-        'text': message
-    }
-    response = requests.post(TELEGRAM_API_URL, data=data)
-    if response.status_code == 200:
-        print("訊息已發送！")
-    else:
-        print(f"發送失敗，狀態碼：{response.status_code}, 回應：{response.text}")
-
-
-def countDownFree():
-    scraped_data = freeGameInfo()
-    # 傳遞爬蟲結果到 Telegram
-    if scraped_data:
-        send_message_to_telegram(f"{scraped_data}")
-    else:
-        send_message_to_telegram("爬蟲沒有獲得任何數據。")
+# def run_schedule():
+#     while True:
+#         schedule.run_pending()
+#         time.sleep(1)
         
-def run_schedule():
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
 
-
+# 一個訊息處理
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    # user_message = event.message.text
+    # reply_message = "感謝您的訊息"
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=freeGameInfo)
+    )
 
 # 主函數
 if __name__ == "__main__":
-    schedule.every().day.at("04:20").do(countDownFree)
+    # schedule.every().day.at("04:20").do(countDownFree)
 
-    # 啟動排程任務執行
-    schedule_thread = threading.Thread(target=run_schedule)
-    schedule_thread.daemon = True  # 設置為守護線程，當主線程結束時，這個線程會自動終止
-    schedule_thread.start()
+    # # 啟動排程任務執行
+    # schedule_thread = threading.Thread(target=run_schedule)
+    # schedule_thread.daemon = True  # 設置為守護線程，當主線程結束時，這個線程會自動終止
+    # schedule_thread.start()
 
     # 啟動 Flask 伺服器
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=10000)
