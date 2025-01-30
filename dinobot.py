@@ -79,7 +79,7 @@ def handle_message(event):
     # reply_message = "感謝您的訊息"
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=freeGameInfo)
+        TextSendMessage(text='hello')
     )
 
 # 主函數
