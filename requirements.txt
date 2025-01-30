@@ -6,3 +6,4 @@ Schedule
 flask
 line-bot-sdk
 python-dotenv
+cloudscraper

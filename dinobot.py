@@ -1,11 +1,9 @@
-import requests, math, datetime, schedule, time
+import requests, math, datetime, schedule, time, os, threading, cloudscraper
 from bs4 import BeautifulSoup
-import os
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextSendMessage, MessageEvent, TextMessage
 from dotenv import load_dotenv
-import threading
 from flask import Flask, abort, request
 
 load_dotenv()
@@ -39,8 +37,8 @@ def callback():
 # @app.route("/freeGameInfo", methods=["POST"])
 # 限時免費遊戲
 def freeGameInfo():
-     # 取得 X-Line-Signature Header
-   
+
+    scraper = cloudscraper.create_scraper(browser={"browser": "chrome", "platform": "windows", "mobile": False})
     url = 'https://www.ptt.cc/bbs/Steam/search?q=%E9%99%90%E5%85%8D' 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -49,7 +47,7 @@ def freeGameInfo():
         'Accept-Language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
         'Connection': 'keep-alive',
     }
-    response = requests.get(url, headers=headers)
+    response = scraper.get(url, headers=headers)
     if response.status_code == 200:
         soup = BeautifulSoup(response.text,"html5lib")
         titles = soup('div', class_='r-ent')
