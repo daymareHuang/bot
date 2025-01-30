@@ -60,7 +60,7 @@ def freeGameInfo():
         if output != "":
           return "==========" + today + " 今日限免 " + "==========\n".join(output)
         else:
-          return "==========" + today + " 今日限免 " + "==========\n" + "******************* 今日沒有限免 ********************"
+          return "==========" + today + " 今日限免 " + "==========\n" + "**************** 今日沒有限免 *****************"
         # 假設你想提取特定的標題
         # titles = [item.text for item in soup.find_all('h2')]  # 修改根據目標網站結構
         # return '\n'.join(titles)
