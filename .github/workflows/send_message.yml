@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Send request to Render LINE Bot endpoint
         run: |
-          curl -X GET https://dinobot-dkup.onrender.com/callback  # 替換為你的 Render 應用的 URL
+          curl -X POST https://dinobot-dkup.onrender.com/callback  # 替換為你的 Render 應用的 URL
